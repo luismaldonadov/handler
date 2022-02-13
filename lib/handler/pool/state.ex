@@ -135,7 +135,12 @@ defmodule Handler.Pool.State do
     end
   end
 
-  defp kickoff_new_task(%State{pool: %Pool{delegate_fun: {mod, fun_name, config}}}, fun, opts, from_pid) do
+  defp kickoff_new_task(
+         %State{pool: %Pool{delegate_fun: {mod, fun_name, config}}},
+         fun,
+         opts,
+         from_pid
+       ) do
     param = Keyword.get(opts, :delegate_param)
     pools = apply(mod, fun_name, [config, param])
     acc = {:reject, NoWorkersAvailable.exception(message: "No Pools Available")}
@@ -149,6 +154,7 @@ defmodule Handler.Pool.State do
             from_pid: from_pid,
             task_name: task_name(opts)
           }
+
           {:halt, {:ok, ref, worker}}
 
         {:reject, exception} ->
